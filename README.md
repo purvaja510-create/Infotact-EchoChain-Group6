@@ -1,7 +1,7 @@
 
 # EchoChain: Circular Economy & Secondary Market Lifecycle Analytics
 
-## Infotact Solutions Internship | Project 3
+## Infotact Solutions Internship | Project 2
 
 EchoChain is an advanced data analytics and engineering project focused on understanding the post-sale lifecycle of electronic products.
 
