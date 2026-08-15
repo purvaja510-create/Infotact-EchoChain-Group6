@@ -1,0 +1,21 @@
+warranty_id,sku,component,failure_date,failure_type,failure_count
+W001,DELL-XPS13-9310,Motherboard,2025-01-15,Power Failure,3
+W002,DELL-XPS13-9310,Display,2025-02-20,Screen Failure,1
+W003,DELL-XPS13-9310,Battery,2025-03-10,Battery Degradation,4
+W004,DELL-XPS13-9310,Keyboard,2025-04-05,Key Failure,2
+W005,LENOVO-T14-G2,Motherboard,2025-01-25,Power Failure,2
+W006,LENOVO-T14-G2,Display,2025-02-15,Screen Failure,3
+W007,LENOVO-T14-G2,Battery,2025-03-18,Battery Degradation,5
+W008,LENOVO-T14-G2,Keyboard,2025-04-12,Key Failure,1
+W009,HP-840-G7,Motherboard,2025-01-30,Power Failure,2
+W010,HP-840-G7,Display,2025-02-25,Screen Failure,2
+W011,HP-840-G7,Battery,2025-03-20,Battery Degradation,4
+W012,HP-840-G7,Keyboard,2025-04-18,Key Failure,2
+W013,APPLE-MBA-M1,Logic Board,2025-01-12,Logic Board Failure,1
+W014,APPLE-MBA-M1,Display,2025-02-28,Screen Failure,1
+W015,APPLE-MBA-M1,Battery,2025-03-22,Battery Degradation,3
+W016,APPLE-MBA-M1,Keyboard,2025-04-20,Key Failure,1
+W017,SAMSUNG-S22,Mainboard,2025-01-18,Power Failure,2
+W018,SAMSUNG-S22,Display,2025-02-22,Screen Failure,4
+W019,SAMSUNG-S22,Battery,2025-03-25,Battery Degradation,6
+W020,SAMSUNG-S22,Camera,2025-04-25,Camera Failure,2

@@ -1,0 +1,21 @@
+sku,brand,model,component,component_type,manufacturing_cost
+DELL-XPS13-9310,Dell,XPS 13 9310,Motherboard,Electronics,18000
+DELL-XPS13-9310,Dell,XPS 13 9310,Display,Display,12000
+DELL-XPS13-9310,Dell,XPS 13 9310,Battery,Battery,6500
+DELL-XPS13-9310,Dell,XPS 13 9310,Keyboard,Input,3500
+LENOVO-T14-G2,Lenovo,ThinkPad T14 Gen 2,Motherboard,Electronics,16000
+LENOVO-T14-G2,Lenovo,ThinkPad T14 Gen 2,Display,Display,9500
+LENOVO-T14-G2,Lenovo,ThinkPad T14 Gen 2,Battery,Battery,5500
+LENOVO-T14-G2,Lenovo,ThinkPad T14 Gen 2,Keyboard,Input,3000
+HP-840-G7,HP,EliteBook 840 G7,Motherboard,Electronics,14000
+HP-840-G7,HP,EliteBook 840 G7,Display,Display,8500
+HP-840-G7,HP,EliteBook 840 G7,Battery,Battery,4200
+HP-840-G7,HP,EliteBook 840 G7,Keyboard,Input,2800
+APPLE-MBA-M1,Apple,MacBook Air M1,Logic Board,Electronics,22000
+APPLE-MBA-M1,Apple,MacBook Air M1,Display,Display,18000
+APPLE-MBA-M1,Apple,MacBook Air M1,Battery,Battery,8500
+APPLE-MBA-M1,Apple,MacBook Air M1,Keyboard,Input,4500
+SAMSUNG-S22,Samsung,Galaxy S22,Mainboard,Electronics,11000
+SAMSUNG-S22,Samsung,Galaxy S22,Display,Display,9000
+SAMSUNG-S22,Samsung,Galaxy S22,Battery,Battery,3000
+SAMSUNG-S22,Samsung,Galaxy S22,Camera,Camera,4500
