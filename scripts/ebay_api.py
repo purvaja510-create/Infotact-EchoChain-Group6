@@ -45,48 +45,52 @@ def search_electronics():
 
     token = get_access_token()
 
-    response = requests.get(
-    "https://api.ebay.com/buy/browse/v1/item_summary/search",
-    headers={
-        "Authorization": f"Bearer {token}",
-        "X-EBAY-C-MARKETPLACE-ID": "EBAY_US"
-        },
-
-        params={
-        "q": "Apple iPhone" ,
-        "limit": 50
-        }
-    )
-
-   
-    response.raise_for_status()
-
-    data = response.json()
+    products = [
+        "Apple iPhone",
+        "Samsung Galaxy",
+        "Sony Headphones",
+        "Dell Laptop",
+        "HP Printer"
+    ]
 
     listings = []
 
-    for item in data.get("itemSummaries", []):
+    for product in products:
 
-        price = item.get("price", {})
-        seller = item.get("seller", {})
+        response = requests.get(
+            "https://api.ebay.com/buy/browse/v1/item_summary/search",
+            headers={
+                "Authorization": f"Bearer {token}",
+                "X-EBAY-C-MARKETPLACE-ID": "EBAY_US"
+            },
+            params={
+                "q": product,
+                "limit": 50
+            }
+        )
 
-        listings.append({
-            "product_title": item.get("title"),
-            "price": price.get("value"),
-            "currency": price.get("currency"),
-            "condition": item.get("condition"),
-            "seller": seller.get("username"),
-            "location": item.get(
-                "itemLocation",
-                {}
-            ).get("city"),
-            "listing_url": item.get("itemWebUrl"),
-            "scraped_at": datetime.now().strftime(
-                "%Y-%m-%d %H:%M:%S"
-            )
-        })
+        response.raise_for_status()
+
+        data = response.json()
+
+        for item in data.get("itemSummaries", []):
+
+            price = item.get("price", {})
+            seller = item.get("seller", {})
+
+            listings.append({
+                "product_title": item.get("title"),
+                "price": price.get("value"),
+                "currency": price.get("currency"),
+                "condition": item.get("condition"),
+                "seller": seller.get("username"),
+                "location": item.get("itemLocation", {}).get("city"),
+                "listing_url": item.get("itemWebUrl"),
+                "scraped_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            })
 
     return listings
+
 
 
 if __name__ == "__main__":
