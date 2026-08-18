@@ -1,0 +1,11 @@
+listing_id,brand,model,product_name,category,condition,price,currency,seller,location,description,price_category,matched_listing_id,match_score,match_status
+EC005,Lenovo,ThinkPad T14 Gen 2,Lenovo ThinkPad T14 Gen 2,display,used,9500.0,INR,PartsHub,Delhi,Replacement display panel for ThinkPad T14 Gen 2.,Low,EC004,100.0,Strong Match
+EC008,Apple,MacBook Air M1,Apple MacBook Air M1,laptop,like new,62000.0,INR,PremiumResale,Mumbai,MacBook Air M1 with 8GB RAM and 256GB SSD.,High,EC009,100.0,Strong Match
+EC006,HP,EliteBook 840 G7,HP EliteBook 840 G7,laptop,good,32000.0,INR,CorporateResale,Pune,Used corporate laptop with Intel Core i5 and 16GB RAM.,Medium,EC007,100.0,Strong Match
+EC009,Apple,MacBook Air M1,Apple MacBook Air M1,battery,good,8500.0,INR,ApplePartsHub,Delhi,Replacement battery compatible with MacBook Air M1.,Low,EC008,100.0,Strong Match
+EC010,Samsung,Galaxy S22,Samsung Galaxy S22,smartphone,good,28000.0,INR,MobileResale,Bengaluru,Used Galaxy S22 smartphone in good working condition.,Medium,EC008,26.32,No Strong Match
+EC004,Lenovo,ThinkPad T14 Gen 2,Lenovo ThinkPad T14 Gen 2,laptop,good,38000.0,INR,OfficeResale,Mumbai,Refurbished ThinkPad T14 Gen 2 with 16GB RAM and 512GB SSD.,Medium,EC005,100.0,Strong Match
+EC001,Dell,XPS 13 9310,Dell XPS 13 9310,laptop,good,45000.0,INR,TechResale,Mumbai,"Dell XPS 13 9310 with Intel Core i7, 16GB RAM and 512GB SSD.",High,EC003,100.0,Strong Match
+EC002,Dell,XPS 13 9310,Dell XPS 13 9310,display,used,12000.0,INR,PartsHub,Delhi,Original display assembly compatible with Dell XPS 13 9310.,Medium,EC003,100.0,Strong Match
+EC003,Dell,XPS 13 9310,Dell XPS 13 9310,battery,good,6500.0,INR,LaptopPartsIndia,Pune,Genuine replacement battery for Dell XPS 13 9310.,Low,EC002,100.0,Strong Match
+EC007,HP,EliteBook 840 G7,HP EliteBook 840 G7,battery,good,4200.0,INR,BatteryStore,Chennai,Tested battery pack for HP EliteBook 840 G7.,Low,EC006,100.0,Strong Match
