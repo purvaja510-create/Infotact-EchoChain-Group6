@@ -2,7 +2,7 @@
 
 ## Table
 
-`bronze.ebay_electrronics`
+`bronze.ebay_electronics`
 
 ## Purpose
 
