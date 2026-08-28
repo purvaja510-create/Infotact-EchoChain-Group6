@@ -1,4 +1,7 @@
 from databricks.connect import DatabricksSession
+from pyspark.sql.functions import when
+from pyspark.sql.functions import concat_ws, upper
+
 
 from pyspark.sql.functions import (
     col,
@@ -99,3 +102,45 @@ sku_df.select(
     "dell_model",
     "price"
 ).show(30, truncate=False)
+
+
+# Keep unique SKU records
+sku_master_df = (
+    sku_df.select(
+        "brand",
+        "sku_candidate",
+        "dell_model",
+        "product_title"
+    )
+    .dropDuplicates()
+)
+
+# Create model column
+
+sku_master_df = sku_master_df.withColumn(
+    "model",
+    when(col("dell_model") != "", col("dell_model"))
+    .otherwise(col("sku_candidate"))
+)
+
+# Create SKU ID
+
+
+sku_master_df = sku_master_df.withColumn(
+    "sku_id",
+    concat_ws("-", upper(col("brand")), upper(col("model")))
+)
+
+# Rename product title
+sku_master_df = sku_master_df.withColumnRenamed(
+    "product_title",
+    "product_name"
+)
+
+# Save locally
+sku_master_df.toPandas().to_csv(
+    "../../data/raw/sku_master.csv",
+    index=False
+)
+
+print("SKU Master created successfully!")
