@@ -8,6 +8,7 @@ marketplace_silver = spark.table(
 # Silver -> Gold transformation
 marketplace_gold = (
     marketplace_silver
+    .filter(F.col("price").isNotNull())
     .groupBy("condition")
     .agg(
         F.count("*").alias("listing_count"),
@@ -16,6 +17,11 @@ marketplace_gold = (
         F.max("price").alias("maximum_price")
     )
     .orderBy(F.desc("listing_count"))
+)
+
+# Gold data validation
+marketplace_gold = marketplace_gold.filter(
+    F.col("listing_count") > 0
 )
 
 # Preview Gold data
