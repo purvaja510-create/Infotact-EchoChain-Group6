@@ -13,8 +13,8 @@ marketplace_normalized = (
         F.lower(
             F.regexp_replace(
                 F.col("product_title"),
-                r"[^a-zA-Z0-9 ]",
-                ""
+                r"[^a-zA-Z0-9]+",
+                " "
             )
         )
     )
