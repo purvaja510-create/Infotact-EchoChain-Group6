@@ -1,32 +1,25 @@
-brand,sku_candidate,dell_model,product_name,model,sku_id
-Apple,A1660,,Apple iPhone 7 - 32GB - Black (Unlocked) A1660 (CDMA + GSM),A1660,APPLE-A1660
-Dell,,Latitude 5491,"Dell Latitude 5491 i7-8850H 32GB RAM 1TB SSD 14"" Laptop NEW",Latitude 5491,DELL-LATITUDE 5491
-Sony,,,Sony Neckband Model 61,,SONY-
-HP,,,"HP 14-em0002wm 14"" Laptop Athlon Silver 7120U 4GB RAM 128GB SSD Moonlight Blue",,HP-
-HP,,,"HP OmniBook 3 16-by0015dx 16"" Laptop Ryzen 5 40 8GB RAM 256GB SSD Glacier Silver",,HP-
-Dell,,Latitude 5491,"DELL Latitude 5491 14"" Laptop i7-8850H 32GB RAM 1TB SSD NEW",Latitude 5491,DELL-LATITUDE 5491
-Samsung,,,"Samsung Galaxy Book4 Edge NP750XQB-KA2US 15.6"" Laptop Qualcomm Snapdragon X",,SAMSUNG-
-HP,,,"HP Victus 15 15-fb3093dx 15.6"" Gaming Laptop Ryzen 7 7445HS 16GB RAM 512GB SSD",,HP-
-Dell,,,"Dell DC15250 15.6"" Laptop Core 3 100U 8GB RAM 512GB SSD",,DELL-
-HP,,,"HP 14-dq6103dx 14"" Laptop N150 4GB RAM 128GB UFS",,HP-
-HP,,,"HP OmniBook 5 16-af1095cl 16"" Laptop Core Ultra 9 285H 32GB RAM 1TB SSD",,HP-
-Dell,,,"Dell DB06250-7144BLU-PUS 16"" Laptop Intel Core Ultra 7 256V 16GB RAM 1TB SSD",,DELL-
-Samsung,,,"Samsung Galaxy Book5 15.6"" Laptop Ultra 7 16GB RAM 512GB SSD Grey",,SAMSUNG-
-HP,,,"HP 17.3"" Laptop INTEL i7-1355U 8GB RAM 256GB SSD Windows 11 Home",,HP-
-HP,,,"HP OmniBook 7 Flip 16-au0773cl 16"" Laptop Core Ultra 7 258V 32GB RAM 1TB SSD",,HP-
-HP,,,"HP 14-dq6012dx 14"" Laptop N150 4GB RAM 128GB UFS",,HP-
-HP,,,"HP OmniBook 3 17-dp0105dx 17.3"" Laptop Ryzen 5 40 8GB RAM 512GB SSD",,HP-
-HP,,,"HP OMEN 16 16-ap0097nr 16"" Gaming Laptop Ryzen AI 9 365 32GB RAM 1TB SSD",,HP-
-HP,,,"HP 15-fc0057wm 15.6"" Laptop Ryzen 7 7730U 16GB RAM 512GB SSD Natural Silver",,HP-
-HP,,,"HP OmniBook 3 17-dp0199nr 17.3"" Laptop Ryzen 3 30 8GB RAM 512GB SSD Mica Silver",,HP-
-Samsung,,,Samsung Galaxy S24 Ultra (Phantom Black),,SAMSUNG-
-Apple,,,Apple iPhone 13 128GB Blue Unlocked,,APPLE-
-Samsung,,,app Samsung Galaxy S24 Ultra (Phantom Black) app,,SAMSUNG-
-Samsung,,,"Samsung Galaxy Book5 Pro 360 16"" Laptop Ultra 7 258V 32GB RAM 1TB SSD Gray",,SAMSUNG-
-HP,,,"HP OmniBook 3 16-bu0007dx 16"" Laptop Core Ultra 7 255U 16GB RAM 512GB SSD",,HP-
-HP,,,"HP OmniBook 16-bu0305dx 16"" Laptop Core Ultra 5 225U 8GB RAM 512GB SSD",,HP-
-HP,,,"HP 15-FD0153DX 15.6"" Laptop Intel Core i3-1315U 8GB RAM 256GB SSD Silver",,HP-
-HP,,,"HP OmniBook X Flip 14-kc0013dx 14"" Laptop Ryzen AI 5 430 16GB RAM 512GB SSD",,HP-
-HP,,,"HP OmniBook X Flip 16-be0005cl 16"" Laptop Ryzen 5 220 8GB RAM 512GB SSD",,HP-
-Dell,,,"Dell DC16256 16"" Laptop RYZEN 7 250 16GB RAM 1TB SSD RADEON GRAPHICS",,DELL-
-Dell,,,"Dell DC15205 15.6"" Laptop i7-1355U 16GB RAM 1TB SSD Windows 11 Home Platinum",,DELL-
+sku_id,brand,model,product_name
+APPLE-A1660,Apple,A1660,Apple A1660
+DELL-LATITUDE-5491,Dell,Latitude 5491,Dell Latitude 5491
+DELL-DC15250,Dell,DC15250,Dell DC15250
+SONY-MODEL-61,Sony,Model 61,Sony Model 61
+APPLE-A2633,Apple,A2633,Apple A2633
+HP-15-FB3093DX,HP,15-fb3093dx,HP 15-fb3093dx
+HP-14-EM0002WM,HP,14-em0002wm,HP 14-em0002wm
+HP-16-BY0015DX,HP,16-by0015dx,HP 16-by0015dx
+SAMSUNG-NP750XQB-KA2US,Samsung,NP750XQB-KA2US,Samsung NP750XQB-KA2US
+HP-14-DQ6103DX,HP,14-dq6103dx,HP 14-dq6103dx
+HP-16-AF1095CL,HP,16-af1095cl,HP 16-af1095cl
+HP-16-AU0773CL,HP,16-au0773cl,HP 16-au0773cl
+HP-14-DQ6012DX,HP,14-dq6012dx,HP 14-dq6012dx
+HP-17-DP0105DX,HP,17-dp0105dx,HP 17-dp0105dx
+HP-16-AP0097NR,HP,16-ap0097nr,HP 16-ap0097nr
+HP-15-FC0057WM,HP,15-fc0057wm,HP 15-fc0057wm
+HP-17-DP0199NR,HP,17-dp0199nr,HP 17-dp0199nr
+HP-16-BU0007DX,HP,16-bu0007dx,HP 16-bu0007dx
+HP-16-BU0305DX,HP,16-bu0305dx,HP 16-bu0305dx
+HP-15-FD0153DX,HP,15-FD0153DX,HP 15-FD0153DX
+HP-14-KC0013DX,HP,14-kc0013dx,HP 14-kc0013dx
+HP-16-BE0005CL,HP,16-be0005cl,HP 16-be0005cl
+DELL-DC16256,Dell,DC16256,Dell DC16256
+DELL-DC15205,Dell,DC15205,Dell DC15205
