@@ -1,34 +1,103 @@
 from pyspark.sql import functions as F
 
-# Read marketplace data from Silver
+
+# Read Silver marketplace data
 marketplace_silver = spark.table(
     "workspace.silver.marketplace_listings"
 )
 
-# Silver -> Gold transformation
-marketplace_gold = (
+
+# Read marketplace-to-candidate SKU matches
+sku_matches = spark.table(
+    "workspace.bronze.marketplace_sku_matches"
+)
+
+
+# Read verified marketplace-to-official SKU mappings
+official_mapping = spark.table(
+    "workspace.bronze.marketplace_official_sku_mapping"
+)
+
+
+# Read internal BOM data
+bom = spark.table(
+    "workspace.bronze.bom"
+).drop("_rescued_data")
+
+
+# Read warranty and component failure data
+warranty = spark.table(
+    "workspace.bronze.warranty"
+).drop("_rescued_data")
+
+
+# Silver -> Gold lifecycle transformation
+marketplace_product_health = (
     marketplace_silver
     .filter(F.col("price").isNotNull())
-    .groupBy("condition")
-    .agg(
-        F.count("*").alias("listing_count"),
-        F.round(F.avg("price"), 2).alias("average_price"),
-        F.min("price").alias("minimum_price"),
-        F.max("price").alias("maximum_price")
+    .join(
+        sku_matches,
+        on="product_title",
+        how="inner"
     )
-    .orderBy(F.desc("listing_count"))
+    .join(
+        official_mapping,
+        on="candidate_sku",
+        how="inner"
+    )
+    .join(
+        bom,
+        official_mapping["official_sku"] == bom["sku"],
+        how="inner"
+    )
+    .join(
+        warranty,
+        (
+            (bom["sku"] == warranty["sku"])
+            & (bom["component"] == warranty["component"])
+        ),
+        how="left"
+    )
+    .select(
+        marketplace_silver["product_title"],
+        sku_matches["brand"],
+        sku_matches["extracted_model"],
+        sku_matches["candidate_sku"],
+        official_mapping["official_sku"],
+        marketplace_silver["price"],
+        marketplace_silver["currency"],
+        marketplace_silver["condition"],
+        marketplace_silver["seller"],
+        marketplace_silver["location"],
+        marketplace_silver["listing_url"],
+        marketplace_silver["scraped_at"],
+        bom["component"],
+        bom["component_type"],
+        bom["manufacturing_cost"],
+        warranty["failure_date"],
+        warranty["failure_type"],
+        warranty["failure_count"]
+    )
 )
+
 
 # Gold data validation
-marketplace_gold = marketplace_gold.filter(
-    F.col("listing_count") > 0
+marketplace_product_health = marketplace_product_health.filter(
+    F.col("official_sku").isNotNull()
 )
 
+
 # Preview Gold data
-marketplace_gold.show(truncate=False)
+marketplace_product_health.show(
+    20,
+    truncate=False
+)
+
 
 # Write Gold Delta table
-marketplace_gold.write \
+marketplace_product_health.write \
     .format("delta") \
     .mode("overwrite") \
-    .saveAsTable("workspace.gold.marketplace_summary")
+    .saveAsTable(
+        "workspace.gold.marketplace_product_health"
+    )
