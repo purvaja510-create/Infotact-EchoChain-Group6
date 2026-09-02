@@ -121,6 +121,7 @@ marketplace_product_health.show(
 # Write Gold Delta table
 marketplace_product_health.write \
     .format("delta") \
+    .option("overwriteSchema", "true") \
     .mode("overwrite") \
     .saveAsTable(
         "workspace.gold.marketplace_product_health"
