@@ -9,18 +9,15 @@ from pyspark.sql.functions import (
     levenshtein,
     length,
     greatest,
-    lit,
     row_number,
-    round,
-    when
+    when,
+    round as spark_round
 )
 
 from pyspark.sql.window import Window
+from pyspark.sql.functions import row_number
 
-
-# =========================================================
 # CONNECT TO DATABRICKS
-# =========================================================
 
 spark = (
     DatabricksSession.builder
@@ -32,78 +29,37 @@ spark = (
 print("Databricks connected successfully")
 
 
-# =========================================================
 # READ SILVER EBAY DATA
-# =========================================================
 
 marketplace_df = spark.table(
     "workspace.silver.ebay_electronics_clean"
 )
 
-print("Marketplace records:", marketplace_df.count())
+print("\nMarketplace records:", marketplace_df.count())
 
 
-# =========================================================
 # READ SKU MASTER
-# =========================================================
 
-local_sku_path = r"C:\\Users\\bhanu\\OneDrive\\Desktop\\Echo\\Infotact-EchoChain-Group6\\data\\raw\\sku_master.csv"
+sku_master_path = (
+    r"C:\Users\bhanu\OneDrive\Desktop\Echo"
+    r"\Infotact-EchoChain-Group6"
+    r"\data\raw\sku_master.csv"
+)
 
-sku_pdf = pd.read_csv(local_sku_path)
+sku_pdf = pd.read_csv(sku_master_path)
+
+print("SKU master records:", len(sku_pdf))  
 
 sku_master_df = spark.createDataFrame(sku_pdf)
 
-print("SKU master records:", sku_master_df.count())
 
-sku_master_df.printSchema()
-sku_master_df.show(10, truncate=False)
-
-
-# =========================================================
-# CLEAN EBAY PRODUCT TITLE
-# =========================================================
-
-marketplace_df = marketplace_df.withColumn(
-    "marketplace_title_clean",
-    trim(
-        regexp_replace(
-            lower(col("product_title")),
-            r"[^a-zA-Z0-9\s]",
-            " "
-        )
-    )
-)
-
-marketplace_df = marketplace_df.withColumn(
-    "marketplace_title_clean",
-    regexp_replace(
-        col("marketplace_title_clean"),
-        r"\s+",
-        " "
-    )
-)
-
-
-# =========================================================
-# CLEAN SKU MASTER PRODUCT NAME
-# =========================================================
-# Expected SKU master columns:
-#
-# sku_id
-# brand
-# model
-# product_name
-#
-# Example:
-# APPLE-A1660,Apple,iPhone 7,Apple iPhone 7
-# DELL-5491,Dell,Latitude 5491,Dell Latitude 5491
-
+# CLEAN MARKETPLACE TITLE
 
 sku_master_df = sku_master_df.withColumn(
     "master_title_clean",
-    trim(
+    lower(
         regexp_replace(
-            lower(col("product_name")),
+            (col("product_name")),
             r"[^a-zA-Z0-9\s]",
             " "
         )
@@ -119,59 +75,122 @@ sku_master_df = sku_master_df.withColumn(
     )
 )
 
+# IDENTIFY MARKETPLACE BRAND
 
-# =========================================================
-# COMPARE EBAY LISTINGS WITH SKU MASTER
-# =========================================================
-# Each eBay listing is compared with every SKU master record.
-# This is fine for our current small project dataset.
+marketplace_df = marketplace_df.withColumn(
+    "market_brand",
 
-comparison_df = marketplace_df.crossJoin(
-    sku_master_df
+    when(
+        lower(col("product_title")).contains("apple"),
+        "Apple"
+    )
+    .when(
+        lower(col("product_title")).contains("dell"),
+        "Dell"
+    )
+    .when(
+        lower(col("product_title")).contains("hp"),
+        "HP"
+    )
+    .when(
+        lower(col("product_title")).contains("samsung"),
+        "Samsung"
+    )
+    .when(
+        lower(col("product_title")).contains("sony"),
+        "Sony"
+    )
+    .otherwise("Unknown")
+)
+
+print("\nMarketplace Records by Brand:")
+
+marketplace_df.groupBy(
+    "market_brand"
+).count().orderBy(
+    "market_brand"
+).show()
+
+
+# Clean SKU Master Product Names
+
+sku_master_df = sku_master_df.withColumn(
+    "master_title_clean",
+    lower(
+        trim(
+            regexp_replace(
+                col("product_name"),
+                r"[^a-zA-Z0-9\s-]",
+                " "
+            )
+        )
+    )
+)
+
+sku_master_df = sku_master_df.withColumn(
+    "master_title_clean",
+    regexp_replace(
+        col("master_title_clean"),
+        r"\s+",
+        " "
+    )
 )
 
 
-# =========================================================
+# Join Marketplace Listings to Same Brand SKUs
+
+comparison_df = (
+    marketplace_df.alias("market")
+    .join(
+        sku_master_df.alias("master"),
+
+        col("market.market_brand")
+        ==
+        col("master.brand"),
+
+        "inner"
+    )
+)
+
+print(
+    "\nCandidate comparisons:",
+    comparison_df.count()
+)
+
 # CALCULATE LEVENSHTEIN DISTANCE
-# =========================================================
 
 comparison_df = comparison_df.withColumn(
     "edit_distance",
     levenshtein(
-        col("marketplace_title_clean"),
-        col("master_title_clean")
+        col("market.product_title_clean"),
+        col("master.master_title_clean")
     )
 )
+# CHECK MARKETPLACE BRANDS
 
+print("\nMarketplace Records by Brand:")
 
-# =========================================================
+marketplace_df.groupBy(
+    "market_brand"
+).count().orderBy("market_brand").show()
+
 # CALCULATE MAXIMUM STRING LENGTH
-# =========================================================
 
 comparison_df = comparison_df.withColumn(
     "max_length",
     greatest(
-        length(col("marketplace_title_clean")),
-        length(col("master_title_clean"))
+        length(col("market.product_title_clean")),
+        length(col("master.master_title_clean"))
     )
 )
 
-
-# =========================================================
-# CALCULATE FUZZY MATCH SCORE
-# =========================================================
-# Score:
-#
-# 100 = exact match
-# 80+ = strong match
-# 60-79 = possible match
-# below 60 = weak match
+# Calculate Similarity Score
 
 comparison_df = comparison_df.withColumn(
     "match_score",
-    round(
+    spark_round(
         (
-            lit(1.0) -
+            1 -
             (
                 col("edit_distance") /
                 col("max_length")
@@ -182,56 +201,37 @@ comparison_df = comparison_df.withColumn(
 )
 
 
-# =========================================================
-# FIND BEST SKU FOR EACH EBAY LISTING
-# =========================================================
+# Rank Matches Per Marketplace Listing
+ 
 
 window_spec = (
     Window
-    .partitionBy("listing_url")
-    .orderBy(col("match_score").desc())
+    .partitionBy(
+        col("market.listing_url")
+    )
+    .orderBy(
+        col("match_score").desc()
+    )
 )
 
-matched_df = comparison_df.withColumn(
+ranked_df = comparison_df.withColumn(
     "match_rank",
-    row_number().over(window_spec)
+    row_number().over(
+        window_spec
+    )
 )
 
-
-# =========================================================
-# KEEP ONLY BEST MATCH
-# =========================================================
+# Keep Best Match
 
 best_matches_df = (
-    matched_df
-    .filter(col("match_rank") == 1)
+    ranked_df
+    .filter(
+        col("match_rank") == 1
+    )
 )
 
 
-# =========================================================
-# DISPLAY FUZZY MATCHING RESULTS
-# =========================================================
-
-print("\nBest SKU Matches:")
-
-best_matches_df.select(
-    "product_title",
-    "sku_id",
-    "brand",
-    "model",
-    "product_name",
-    "match_score"
-).show(
-    50,
-    truncate=False
-)
-
-
-# =========================================================
-# ADD MATCH QUALITY
-# =========================================================
-
-from pyspark.sql.functions import when
+# Add Match Quality Category
 
 best_matches_df = best_matches_df.withColumn(
     "match_quality",
@@ -240,39 +240,52 @@ best_matches_df = best_matches_df.withColumn(
         col("match_score") >= 80,
         "Strong Match"
     )
+
     .when(
         col("match_score") >= 60,
         "Possible Match"
     )
+
     .otherwise(
         "Weak Match"
     )
 )
 
 
-# =========================================================
-# DISPLAY FINAL RESULTS
-# =========================================================
+# Display Results
 
-print("\nFinal Fuzzy Matching Results:")
+print("\nBest Fuzzy Matches:")
 
 best_matches_df.select(
-    "product_title",
-    "sku_id",
-    "brand",
-    "model",
-    "product_name",
+    col("market.product_title")
+        .alias("marketplace_title"),
+
+    col("market.market_brand")
+        .alias("brand"),
+
+    col("master.sku_id")
+        .alias("matched_sku_id"),
+
+    col("master.product_name")
+        .alias("matched_product"),
+
     "match_score",
-    "match_quality"
+    "match_quality",
+
+    col("market.data_source")
+        .alias("data_source"),
+
+    col("market.is_synthetic")
+        .alias("is_synthetic")
+
+).orderBy(
+    col("match_score").desc()
 ).show(
     50,
-    truncate=False
-)
+    truncate=False)
 
 
-# =========================================================
 # MATCH QUALITY SUMMARY
-# =========================================================
 
 print("\nMatch Quality Summary:")
 
@@ -281,19 +294,41 @@ best_matches_df.groupBy(
 ).count().show()
 
 
-# =========================================================
-# TOTAL MATCHED RECORDS
-# =========================================================
+# Matched Records by Brand
 
-print(
-    "Total marketplace records:",
+print("\nMatched Records by Brand:")
+
+best_matches_df.groupBy(
+    col("market.market_brand")
+        .alias("brand")
+).count().orderBy(
+    "brand"
+).show()
+
+
+
+# Totals
+
+
+total_marketplace = (
     marketplace_df.count()
 )
 
-print(
-    "Total matched records:",
+total_matched = (
     best_matches_df.count()
 )
 
+print(
+    "\nTotal Marketplace Records:",
+    total_marketplace
+)
 
-print("\nFuzzy matching completed successfully")
+print(
+    "Total Matched Records:",
+    total_matched
+)
+
+
+print(
+    "\nFuzzy matching completed successfully."
+)
