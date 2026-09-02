@@ -1,5 +1,6 @@
-category,total_listings,average_price
-laptop,4,44250.0
-battery,3,6400.0
-display,2,10750.0
-smartphone,1,28000.0
+search_category,total_listings,average_price
+hp laptop,181,510.6604972375697
+apple iphone,163,217.79177914110366
+dell laptop,110,397.33527272727264
+samsung galaxy,68,780.7060294117646
+sony headphones,60,449.10883333333334
