@@ -1,81 +1,94 @@
+
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import (
-    col,
-    trim,
-    lower,
-    when,
-    count,
-    avg,
-    concat_ws
-)
+from pyspark.sql.functions import col, trim, lower, when, count, avg
 from rapidfuzz.fuzz import ratio
 import csv
 import os
 
+# ============================================================
+# 1. PROJECT PATH
+# ============================================================
+
+project_root = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..")
+)
+
+input_file = os.path.join(
+    project_root,
+    "data",
+    "raw",
+    "marketplace_electronics_final.json"
+)
 
 # ============================================================
-# 1. CREATE SPARK SESSION
+# 2. CREATE SPARK SESSION
 # ============================================================
 
-spark = SparkSession.builder \
-    .appName("EchoChain Member 3 - PySpark") \
-    .master("local[*]") \
+spark = (
+    SparkSession.builder
+    .appName("EchoChain Member 3 - PySpark")
+    .master("local[*]")
     .getOrCreate()
+)
 
 spark.sparkContext.setLogLevel("WARN")
 
-
 # ============================================================
-# 2. INPUT DATA - BRONZE SOURCE
+# 3. LOAD BRONZE DATA
 # ============================================================
-
-input_file = "../data/raw/marketplace_listings.json"
 
 print("\n===== LOADING BRONZE DATA =====")
 
-df = spark.read \
-    .option("multiLine", True) \
+df = (
+    spark.read
+    .option("multiLine", True)
     .json(input_file)
+)
 
 print("Bronze data loaded successfully.")
 
-
-# ============================================================
-# 3. SHOW ORIGINAL DATA
-# ============================================================
-
 print("\n===== ORIGINAL DATA =====")
-
 df.show(10, truncate=False)
 
 print("\n===== ORIGINAL SCHEMA =====")
-
 df.printSchema()
 
-
 # ============================================================
-# 4. DATA CLEANING
+# 4. CLEAN DATA
 # ============================================================
 
 print("\n===== CLEANING DATA =====")
 
-# Remove duplicate records
 df = df.dropDuplicates()
 
-# Remove rows with null values
-df = df.dropna()
+# Remove rows only when important fields are missing
+required_columns = [
+    "listing_url",
+    "product_title",
+    "price",
+    "search_category"
+]
 
-# Clean text columns
+existing_required_columns = [
+    column_name
+    for column_name in required_columns
+    if column_name in df.columns
+]
+
+df = df.dropna(
+    subset=existing_required_columns
+)
+
 text_columns = [
-    "listing_id",
-    "brand",
-    "model",
-    "category",
     "condition",
     "currency",
-    "seller",
+    "data_source",
+    "listing_url",
     "location",
-    "description"
+    "product_title",
+    "scraped_at",
+    "search_category",
+    "seller"
 ]
 
 for column_name in text_columns:
@@ -85,22 +98,9 @@ for column_name in text_columns:
             trim(col(column_name))
         )
 
-
 # ============================================================
-# 5. STANDARDIZE DATA
+# 5. STANDARDIZE TEXT
 # ============================================================
-
-if "brand" in df.columns:
-    df = df.withColumn(
-        "brand",
-        trim(col("brand"))
-    )
-
-if "category" in df.columns:
-    df = df.withColumn(
-        "category",
-        lower(trim(col("category")))
-    )
 
 if "condition" in df.columns:
     df = df.withColumn(
@@ -108,6 +108,11 @@ if "condition" in df.columns:
         lower(trim(col("condition")))
     )
 
+if "search_category" in df.columns:
+    df = df.withColumn(
+        "search_category",
+        lower(trim(col("search_category")))
+    )
 
 # ============================================================
 # 6. PRICE TRANSFORMATION
@@ -127,25 +132,19 @@ if "price" in df.columns:
         .otherwise("High")
     )
 
-
 # ============================================================
 # 7. CREATE PRODUCT NAME
 # ============================================================
 
-df = df.withColumn(
-    "product_name",
-    concat_ws(
-        " ",
-        col("brand"),
-        col("model")
-    )
-)
+if "product_title" in df.columns:
 
+    df = df.withColumn(
+        "product_name",
+        col("product_title")
+    )
 
 print("\n===== CLEANED & TRANSFORMED DATA =====")
-
 df.show(10, truncate=False)
-
 
 # ============================================================
 # 8. FUZZY MATCHING
@@ -153,11 +152,8 @@ df.show(10, truncate=False)
 
 print("\n===== FUZZY MATCHING =====")
 
-# Collect only required columns for matching
 matching_rows = df.select(
-    "listing_id",
-    "brand",
-    "model",
+    "listing_url",
     "product_name"
 ).collect()
 
@@ -165,63 +161,68 @@ matches = []
 
 for current_row in matching_rows:
 
-    current_id = current_row["listing_id"]
+    current_url = current_row["listing_url"]
     current_product = current_row["product_name"]
 
-    best_match_id = None
+    best_match_url = None
     best_score = 0.0
+
+    if current_product is None:
+
+        matches.append(
+            (current_url, None, 0.0)
+        )
+
+        continue
 
     for candidate_row in matching_rows:
 
-        candidate_id = candidate_row["listing_id"]
+        candidate_url = candidate_row["listing_url"]
 
-        # Don't compare a listing with itself
-        if current_id == candidate_id:
+        if current_url == candidate_url:
             continue
 
         candidate_product = candidate_row["product_name"]
 
+        if candidate_product is None:
+            continue
+
         score = ratio(
-            current_product.lower(),
-            candidate_product.lower()
+            str(current_product).lower(),
+            str(candidate_product).lower()
         )
 
         if score > best_score:
 
             best_score = score
-            best_match_id = candidate_id
+            best_match_url = candidate_url
 
     matches.append(
         (
-            current_id,
-            best_match_id,
+            current_url,
+            best_match_url,
             round(float(best_score), 2)
         )
     )
 
-
-# Create Spark DataFrame for fuzzy matching results
-
 match_df = spark.createDataFrame(
     matches,
     [
-        "listing_id",
-        "matched_listing_id",
+        "listing_url",
+        "matched_listing_url",
         "match_score"
     ]
 )
 
-
-# Join fuzzy matching results
-
 df = df.join(
     match_df,
-    on="listing_id",
+    on="listing_url",
     how="left"
 )
 
-
-# Match classification
+# ============================================================
+# 9. MATCH STATUS
+# ============================================================
 
 df = df.withColumn(
     "match_status",
@@ -238,74 +239,78 @@ df = df.withColumn(
     )
 )
 
-
 print("\n===== FUZZY MATCHING RESULTS =====")
 
 df.select(
-    "listing_id",
-    "brand",
-    "model",
-    "matched_listing_id",
+    "listing_url",
+    "product_title",
+    "matched_listing_url",
     "match_score",
     "match_status"
 ).show(20, truncate=False)
 
-
 # ============================================================
-# 9. SILVER TABLE
+# 10. CREATE SILVER TABLE
 # ============================================================
 
 print("\n===== CREATING SILVER TABLE =====")
 
-silver_df = df.select(
-    "listing_id",
-    "brand",
-    "model",
-    "product_name",
-    "category",
+silver_columns = [
+    "listing_url",
     "condition",
-    "price",
     "currency",
-    "seller",
+    "data_source",
+    "is_synthetic",
     "location",
-    "description",
+    "price",
+    "product_title",
+    "product_name",
+    "scraped_at",
+    "search_category",
+    "seller",
     "price_category",
-    "matched_listing_id",
+    "matched_listing_url",
     "match_score",
     "match_status"
+]
+
+silver_columns = [
+    column_name
+    for column_name in silver_columns
+    if column_name in df.columns
+]
+
+silver_df = df.select(
+    *silver_columns
 )
 
 print("\n===== SILVER TABLE =====")
-
 silver_df.show(20, truncate=False)
 
-
 # ============================================================
-# 10. GOLD TABLE
+# 11. CREATE GOLD TABLE
 # ============================================================
 
 print("\n===== CREATING GOLD TABLE =====")
 
-gold_df = silver_df.groupBy(
-    "category"
-).agg(
-    count("*").alias("total_listings"),
-    avg("price").alias("average_price")
-).orderBy(
-    col("total_listings").desc()
+gold_df = (
+    silver_df
+    .groupBy("search_category")
+    .agg(
+        count("*").alias("total_listings"),
+        avg("price").alias("average_price")
+    )
+    .orderBy(
+        col("total_listings").desc()
+    )
 )
 
-
 print("\n===== GOLD TABLE =====")
-
 gold_df.show(truncate=False)
 
-
 # ============================================================
-# 11. CREATE OUTPUT DIRECTORIES
+# 12. CREATE OUTPUT FOLDERS
 # ============================================================
-
-project_root = os.path.abspath("..")
 
 silver_folder = os.path.join(
     project_root,
@@ -331,19 +336,18 @@ os.makedirs(
     exist_ok=True
 )
 
-
 # ============================================================
-# 12. SAVE SILVER TABLE
+# 13. SAVE SILVER CSV
 # ============================================================
 
 print("\n===== SAVING SILVER TABLE =====")
-
-silver_rows = silver_df.collect()
 
 silver_file = os.path.join(
     silver_folder,
     "marketplace_silver.csv"
 )
+
+silver_rows = silver_df.collect()
 
 with open(
     silver_file,
@@ -359,23 +363,22 @@ with open(
     )
 
     for row in silver_rows:
-        writer.writerow(
-            row
-        )
+        writer.writerow(row)
 
+print("Silver table saved successfully.")
 
 # ============================================================
-# 13. SAVE GOLD TABLE
+# 14. SAVE GOLD CSV
 # ============================================================
 
 print("\n===== SAVING GOLD TABLE =====")
-
-gold_rows = gold_df.collect()
 
 gold_file = os.path.join(
     gold_folder,
     "marketplace_gold.csv"
 )
+
+gold_rows = gold_df.collect()
 
 with open(
     gold_file,
@@ -391,13 +394,12 @@ with open(
     )
 
     for row in gold_rows:
-        writer.writerow(
-            row
-        )
+        writer.writerow(row)
 
+print("Gold table saved successfully.")
 
 # ============================================================
-# 14. FINAL STATUS
+# 15. FINAL
 # ============================================================
 
 print("\n==========================================")
@@ -424,11 +426,6 @@ print("    ↓")
 print("Gold Table")
 print("    ↓")
 print("Power BI")
-
-
-# ============================================================
-# 15. STOP SPARK
-# ============================================================
 
 spark.stop()
 
