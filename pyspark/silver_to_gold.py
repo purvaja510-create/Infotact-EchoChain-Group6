@@ -1,4 +1,5 @@
 from pyspark.sql import functions as F
+from pyspark.sql.window import Window
 
 
 # Read Silver marketplace data
@@ -81,9 +82,32 @@ marketplace_product_health = (
 )
 
 
-# Gold data validation
-marketplace_product_health = marketplace_product_health.filter(
-    F.col("official_sku").isNotNull()
+# Calculate component health score
+marketplace_product_health = (
+    marketplace_product_health
+    .withColumn(
+        "component_health_score",
+        F.greatest(
+            F.lit(0),
+            100 - (F.col("failure_count") * 10)
+        )
+    )
+)
+
+
+# Calculate product-level circularity score
+marketplace_product_health = (
+    marketplace_product_health
+    .withColumn(
+        "circularity_score",
+        F.round(
+            F.avg("component_health_score").over(
+                Window.partitionBy("official_sku")
+            ),
+            2
+        )
+    )
+    .filter(F.col("official_sku").isNotNull())
 )
 
 
