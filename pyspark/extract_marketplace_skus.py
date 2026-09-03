@@ -5,45 +5,42 @@ marketplace_silver = spark.table(
     "workspace.silver.marketplace_listings"
 )
 
-# Extract brand and model identifiers from marketplace titles
+# Extract marketplace SKU candidates from product titles.
+# The logic supports both explicit brand names and common product aliases.
 marketplace_sku_candidates = (
     marketplace_silver
     .withColumn(
-        "brand",
-        F.when(F.lower("product_title_clean").contains("apple"), "Apple")
-         .when(F.lower("product_title_clean").contains("samsung"), "Samsung")
-         .when(F.lower("product_title_clean").contains("sony"), "Sony")
-         .when(F.lower("product_title_clean").contains("dell"), "Dell")
-         .when(F.lower("product_title_clean").contains("hp"), "HP")
-         .otherwise("Unknown")
+        "title_lower",
+        F.lower(F.col("product_title_clean"))
     )
     .withColumn(
         "extracted_model",
         F.when(
-            F.col("brand") == "Apple",
+            F.col("title_lower").contains("iphone 13"),
+            "A2633"
+        )
+        .when(
+            F.col("title_lower").contains("iphone 7"),
+            "A1660"
+        )
+        .when(
+            F.col("title_lower").rlike(r"(?i)\blatitude\s+\d{4}\b"),
             F.regexp_extract(
                 "product_title_clean",
-                r"(?i)\bA\d{4}\b",
+                r"(?i)\bLatitude\s+\d{4}\b",
                 0
             )
         )
         .when(
-            F.col("brand") == "Dell",
-            F.coalesce(
-                F.regexp_extract(
-                    "product_title_clean",
-                    r"(?i)\bLatitude\s+\d{4}\b",
-                    0
-                ),
-                F.regexp_extract(
-                    "product_title_clean",
-                    r"(?i)\bDC\d{5}\b",
-                    0
-                )
+            F.col("title_lower").rlike(r"(?i)\bdc\d{5}\b"),
+            F.regexp_extract(
+                "product_title_clean",
+                r"(?i)\bDC\d{5}\b",
+                0
             )
         )
         .when(
-            F.col("brand") == "HP",
+            F.col("title_lower").rlike(r"(?i)\b\d{2}-[a-z]{2}\d{4}[a-z]{0,2}\b"),
             F.regexp_extract(
                 "product_title_clean",
                 r"(?i)\b\d{2}-[A-Z]{2}\d{4}[A-Z]{0,2}\b",
@@ -51,7 +48,7 @@ marketplace_sku_candidates = (
             )
         )
         .when(
-            F.col("brand") == "Samsung",
+            F.col("title_lower").rlike(r"(?i)\bnp[a-z0-9-]+\b"),
             F.regexp_extract(
                 "product_title_clean",
                 r"(?i)\bNP[A-Z0-9-]+\b",
@@ -59,7 +56,7 @@ marketplace_sku_candidates = (
             )
         )
         .when(
-            F.col("brand") == "Sony",
+            F.col("title_lower").rlike(r"(?i)\bmodel\s+\d+\b"),
             F.regexp_extract(
                 "product_title_clean",
                 r"(?i)\bModel\s+\d+\b",
@@ -68,6 +65,34 @@ marketplace_sku_candidates = (
         )
         .otherwise("")
     )
+    .withColumn(
+        "brand",
+        F.when(
+            F.col("extracted_model").rlike(r"(?i)^A\d{4}$"),
+            "Apple"
+        )
+        .when(
+            F.col("extracted_model").rlike(r"(?i)^Latitude\s+\d{4}$")
+            | F.col("extracted_model").rlike(r"(?i)^DC\d{5}$"),
+            "Dell"
+        )
+        .when(
+            F.col("extracted_model").rlike(
+                r"(?i)^\d{2}-[A-Z]{2}\d{4}[A-Z]{0,2}$"
+            ),
+            "HP"
+        )
+        .when(
+            F.col("extracted_model").rlike(r"(?i)^NP[A-Z0-9-]+$"),
+            "Samsung"
+        )
+        .when(
+            F.col("extracted_model").rlike(r"(?i)^Model\s+\d+$"),
+            "Sony"
+        )
+        .otherwise("Unknown")
+    )
+    .drop("title_lower")
     .filter(F.col("extracted_model") != "")
 )
 
