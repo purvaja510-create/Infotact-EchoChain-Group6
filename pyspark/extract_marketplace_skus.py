@@ -6,7 +6,7 @@ marketplace_silver = spark.table(
 )
 
 # Extract marketplace SKU candidates from product titles.
-# The logic supports both explicit brand names and common product aliases.
+# The logic supports explicit model numbers and common product aliases.
 marketplace_sku_candidates = (
     marketplace_silver
     .withColumn(
@@ -16,6 +16,14 @@ marketplace_sku_candidates = (
     .withColumn(
         "extracted_model",
         F.when(
+            F.col("title_lower").rlike(r"(?i)\bA\d{4}\b"),
+            F.regexp_extract(
+                "product_title_clean",
+                r"(?i)\bA\d{4}\b",
+                0
+            )
+        )
+        .when(
             F.col("title_lower").contains("iphone 13"),
             "A2633"
         )
@@ -40,7 +48,9 @@ marketplace_sku_candidates = (
             )
         )
         .when(
-            F.col("title_lower").rlike(r"(?i)\b\d{2}-[a-z]{2}\d{4}[a-z]{0,2}\b"),
+            F.col("title_lower").rlike(
+                r"(?i)\b\d{2}-[a-z]{2}\d{4}[a-z]{0,2}\b"
+            ),
             F.regexp_extract(
                 "product_title_clean",
                 r"(?i)\b\d{2}-[A-Z]{2}\d{4}[A-Z]{0,2}\b",
