@@ -1,3 +1,15 @@
+"""
+Validate the EchoChain marketplace dataset.
+
+The validation checks:
+- Required marketplace fields are present
+- Listing URLs are unique
+- Prices are numeric and greater than zero
+- Marketplace currency is USD
+- Product titles are populated
+- Synthetic-data flag is present
+"""
+
 import json
 from pathlib import Path
 
@@ -6,20 +18,22 @@ DATA_FILE = (
     Path(__file__).resolve().parents[2]
     / "data"
     / "raw"
-    / "marketplace_listings.json"
+    / "marketplace_electronics_final.json"
 )
 
+
 REQUIRED_FIELDS = [
-    "listing_id",
-    "brand",
-    "model",
-    "category",
-    "condition",
+    "search_category",
+    "product_title",
     "price",
     "currency",
+    "condition",
     "seller",
     "location",
-    "description",
+    "listing_url",
+    "scraped_at",
+    "data_source",
+    "is_synthetic",
 ]
 
 
@@ -30,8 +44,7 @@ def load_data():
 
 def validate_data(records):
     errors = []
-
-    listing_ids = []
+    listing_urls = set()
 
     for index, record in enumerate(records, start=1):
 
@@ -42,29 +55,50 @@ def validate_data(records):
                     f"Record {index}: missing required field '{field}'"
                 )
 
-        # Check duplicate listing IDs
-        listing_id = record.get("listing_id")
+        # Check duplicate listing URLs
+        listing_url = record.get("listing_url")
 
-        if listing_id in listing_ids:
+        if listing_url in listing_urls:
             errors.append(
-                f"Record {index}: duplicate listing_id '{listing_id}'"
+                f"Record {index}: duplicate listing_url '{listing_url}'"
             )
 
-        listing_ids.append(listing_id)
+        if listing_url:
+            listing_urls.add(listing_url)
 
         # Check price
         try:
-            float(record.get("price"))
+            price = float(record.get("price"))
+
+            if price <= 0:
+                errors.append(
+                    f"Record {index}: price must be greater than zero "
+                    f"'{record.get('price')}'"
+                )
+
         except (TypeError, ValueError):
             errors.append(
-                f"Record {index}: invalid price '{record.get('price')}'"
+                f"Record {index}: invalid price "
+                f"'{record.get('price')}'"
             )
 
         # Check currency
-        if record.get("currency") != "INR":
+        if record.get("currency") != "USD":
             errors.append(
                 f"Record {index}: unexpected currency "
                 f"'{record.get('currency')}'"
+            )
+
+        # Check product title
+        if not record.get("product_title"):
+            errors.append(
+                f"Record {index}: missing product title"
+            )
+
+        # Check synthetic flag
+        if not isinstance(record.get("is_synthetic"), bool):
+            errors.append(
+                f"Record {index}: is_synthetic must be true or false"
             )
 
     return errors
@@ -79,11 +113,12 @@ def main():
     print(f"Records checked: {len(records)}")
 
     if errors:
-        print(f"Validation status: FAILED")
+        print("Validation status: FAILED")
         print(f"Errors found: {len(errors)}")
 
         for error in errors:
             print(f"- {error}")
+
     else:
         print("Validation status: PASSED")
         print("No data-quality errors found.")
