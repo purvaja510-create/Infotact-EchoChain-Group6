@@ -1,21 +1,97 @@
-sku,brand,model,component,component_type,manufacturing_cost
-DELL-XPS13-9310,Dell,XPS 13 9310,Motherboard,Electronics,18000
-DELL-XPS13-9310,Dell,XPS 13 9310,Display,Display,12000
-DELL-XPS13-9310,Dell,XPS 13 9310,Battery,Battery,6500
-DELL-XPS13-9310,Dell,XPS 13 9310,Keyboard,Input,3500
-LENOVO-T14-G2,Lenovo,ThinkPad T14 Gen 2,Motherboard,Electronics,16000
-LENOVO-T14-G2,Lenovo,ThinkPad T14 Gen 2,Display,Display,9500
-LENOVO-T14-G2,Lenovo,ThinkPad T14 Gen 2,Battery,Battery,5500
-LENOVO-T14-G2,Lenovo,ThinkPad T14 Gen 2,Keyboard,Input,3000
-HP-840-G7,HP,EliteBook 840 G7,Motherboard,Electronics,14000
-HP-840-G7,HP,EliteBook 840 G7,Display,Display,8500
-HP-840-G7,HP,EliteBook 840 G7,Battery,Battery,4200
-HP-840-G7,HP,EliteBook 840 G7,Keyboard,Input,2800
-APPLE-MBA-M1,Apple,MacBook Air M1,Logic Board,Electronics,22000
-APPLE-MBA-M1,Apple,MacBook Air M1,Display,Display,18000
-APPLE-MBA-M1,Apple,MacBook Air M1,Battery,Battery,8500
-APPLE-MBA-M1,Apple,MacBook Air M1,Keyboard,Input,4500
-SAMSUNG-S22,Samsung,Galaxy S22,Mainboard,Electronics,11000
-SAMSUNG-S22,Samsung,Galaxy S22,Display,Display,9000
-SAMSUNG-S22,Samsung,Galaxy S22,Battery,Battery,3000
-SAMSUNG-S22,Samsung,Galaxy S22,Camera,Camera,4500
+sku,component,component_type,manufacturing_cost,currency
+APPLE-A1660,Battery,Power,55,USD
+APPLE-A1660,Display,Display,125,USD
+APPLE-A1660,Mainboard,Core,210,USD
+APPLE-A1660,Camera,Imaging,75,USD
+DELL-LATITUDE-5491,Battery,Power,75,USD
+DELL-LATITUDE-5491,Display,Display,155,USD
+DELL-LATITUDE-5491,Mainboard,Core,245,USD
+DELL-LATITUDE-5491,Keyboard,Input,70,USD
+DELL-DC15250,Battery,Power,80,USD
+DELL-DC15250,Display,Display,160,USD
+DELL-DC15250,Mainboard,Core,250,USD
+DELL-DC15250,Keyboard,Input,75,USD
+SONY-MODEL-61,Battery,Power,40,USD
+SONY-MODEL-61,Driver,Audio,50,USD
+SONY-MODEL-61,Mainboard,Core,75,USD
+SONY-MODEL-61,Controls,Input,30,USD
+APPLE-A2633,Battery,Power,65,USD
+APPLE-A2633,Display,Display,135,USD
+APPLE-A2633,Mainboard,Core,220,USD
+APPLE-A2633,Camera,Imaging,85,USD
+HP-15-FB3093DX,Battery,Power,55,USD
+HP-15-FB3093DX,Display,Display,120,USD
+HP-15-FB3093DX,Mainboard,Core,190,USD
+HP-15-FB3093DX,Keyboard,Input,50,USD
+HP-14-EM0002WM,Battery,Power,55,USD
+HP-14-EM0002WM,Display,Display,120,USD
+HP-14-EM0002WM,Mainboard,Core,190,USD
+HP-14-EM0002WM,Keyboard,Input,50,USD
+HP-16-BY0015DX,Battery,Power,55,USD
+HP-16-BY0015DX,Display,Display,120,USD
+HP-16-BY0015DX,Mainboard,Core,190,USD
+HP-16-BY0015DX,Keyboard,Input,50,USD
+SAMSUNG-NP750XQB-KA2US,Battery,Power,70,USD
+SAMSUNG-NP750XQB-KA2US,Display,Display,155,USD
+SAMSUNG-NP750XQB-KA2US,Mainboard,Core,240,USD
+SAMSUNG-NP750XQB-KA2US,Camera,Imaging,85,USD
+HP-14-DQ6103DX,Battery,Power,55,USD
+HP-14-DQ6103DX,Display,Display,120,USD
+HP-14-DQ6103DX,Mainboard,Core,190,USD
+HP-14-DQ6103DX,Keyboard,Input,50,USD
+HP-16-AF1095CL,Battery,Power,55,USD
+HP-16-AF1095CL,Display,Display,120,USD
+HP-16-AF1095CL,Mainboard,Core,190,USD
+HP-16-AF1095CL,Keyboard,Input,50,USD
+HP-16-AU0773CL,Battery,Power,55,USD
+HP-16-AU0773CL,Display,Display,120,USD
+HP-16-AU0773CL,Mainboard,Core,190,USD
+HP-16-AU0773CL,Keyboard,Input,50,USD
+HP-14-DQ6012DX,Battery,Power,55,USD
+HP-14-DQ6012DX,Display,Display,120,USD
+HP-14-DQ6012DX,Mainboard,Core,190,USD
+HP-14-DQ6012DX,Keyboard,Input,50,USD
+HP-17-DP0105DX,Battery,Power,55,USD
+HP-17-DP0105DX,Display,Display,120,USD
+HP-17-DP0105DX,Mainboard,Core,190,USD
+HP-17-DP0105DX,Keyboard,Input,50,USD
+HP-16-AP0097NR,Battery,Power,55,USD
+HP-16-AP0097NR,Display,Display,120,USD
+HP-16-AP0097NR,Mainboard,Core,190,USD
+HP-16-AP0097NR,Keyboard,Input,50,USD
+HP-15-FC0057WM,Battery,Power,55,USD
+HP-15-FC0057WM,Display,Display,120,USD
+HP-15-FC0057WM,Mainboard,Core,190,USD
+HP-15-FC0057WM,Keyboard,Input,50,USD
+HP-17-DP0199NR,Battery,Power,55,USD
+HP-17-DP0199NR,Display,Display,120,USD
+HP-17-DP0199NR,Mainboard,Core,190,USD
+HP-17-DP0199NR,Keyboard,Input,50,USD
+HP-16-BU0007DX,Battery,Power,55,USD
+HP-16-BU0007DX,Display,Display,120,USD
+HP-16-BU0007DX,Mainboard,Core,190,USD
+HP-16-BU0007DX,Keyboard,Input,50,USD
+HP-16-BU0305DX,Battery,Power,55,USD
+HP-16-BU0305DX,Display,Display,120,USD
+HP-16-BU0305DX,Mainboard,Core,190,USD
+HP-16-BU0305DX,Keyboard,Input,50,USD
+HP-15-FD0153DX,Battery,Power,55,USD
+HP-15-FD0153DX,Display,Display,120,USD
+HP-15-FD0153DX,Mainboard,Core,190,USD
+HP-15-FD0153DX,Keyboard,Input,50,USD
+HP-14-KC0013DX,Battery,Power,55,USD
+HP-14-KC0013DX,Display,Display,120,USD
+HP-14-KC0013DX,Mainboard,Core,190,USD
+HP-14-KC0013DX,Keyboard,Input,50,USD
+HP-16-BE0005CL,Battery,Power,55,USD
+HP-16-BE0005CL,Display,Display,120,USD
+HP-16-BE0005CL,Mainboard,Core,190,USD
+HP-16-BE0005CL,Keyboard,Input,50,USD
+DELL-DC16256,Battery,Power,85,USD
+DELL-DC16256,Display,Display,165,USD
+DELL-DC16256,Mainboard,Core,255,USD
+DELL-DC16256,Keyboard,Input,80,USD
+DELL-DC15205,Battery,Power,70,USD
+DELL-DC15205,Display,Display,150,USD
+DELL-DC15205,Mainboard,Core,240,USD
+DELL-DC15205,Keyboard,Input,65,USD
