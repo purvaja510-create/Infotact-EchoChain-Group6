@@ -9,10 +9,22 @@ marketplace_bronze = spark.table(
 marketplace_silver = (
     marketplace_bronze
     .drop("_rescued_data")
+    .withColumn(
+        "product_title_clean",
+        F.trim(
+            F.regexp_replace(
+                F.col("product_title"),
+                r"\s+",
+                " "
+            )
+        )
+    )
     .withColumn("price", F.col("price").cast("double"))
     .withColumn("scraped_at", F.to_timestamp("scraped_at"))
+    .filter(F.col("product_title_clean").isNotNull())
+    .filter(F.col("price").isNotNull())
+    .filter(F.col("price") > 0)
     .dropDuplicates(["listing_url"])
-    .filter(F.col("product_title").isNotNull())
 )
 
 # Preview Silver data
@@ -23,4 +35,5 @@ marketplace_silver.show(20, truncate=False)
 marketplace_silver.write \
     .format("delta") \
     .mode("overwrite") \
+    .option("overwriteSchema", "true") \
     .saveAsTable("workspace.silver.marketplace_listings")
