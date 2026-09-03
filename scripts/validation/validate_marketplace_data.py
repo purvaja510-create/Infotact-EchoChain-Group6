@@ -2,12 +2,15 @@
 Validate the EchoChain marketplace dataset.
 
 The validation checks:
-- Required marketplace fields are present
+- Required marketplace fields exist
 - Listing URLs are unique
 - Prices are numeric and greater than zero
 - Marketplace currency is USD
 - Product titles are populated
 - Synthetic-data flag is present
+
+Seller and location are allowed to be null because some marketplace
+listings do not provide those attributes.
 """
 
 import json
@@ -48,25 +51,35 @@ def validate_data(records):
 
     for index, record in enumerate(records, start=1):
 
-        # Check required fields
+        # Check that required fields exist.
         for field in REQUIRED_FIELDS:
-            if field not in record or record[field] in (None, ""):
+            if field not in record:
                 errors.append(
                     f"Record {index}: missing required field '{field}'"
                 )
 
-        # Check duplicate listing URLs
-        listing_url = record.get("listing_url")
-
-        if listing_url in listing_urls:
+        # Product title must be populated.
+        if not record.get("product_title"):
             errors.append(
-                f"Record {index}: duplicate listing_url '{listing_url}'"
+                f"Record {index}: missing product title"
             )
 
-        if listing_url:
+        # Listing URL must be populated and unique.
+        listing_url = record.get("listing_url")
+
+        if not listing_url:
+            errors.append(
+                f"Record {index}: missing listing_url"
+            )
+        elif listing_url in listing_urls:
+            errors.append(
+                f"Record {index}: duplicate listing_url "
+                f"'{listing_url}'"
+            )
+        else:
             listing_urls.add(listing_url)
 
-        # Check price
+        # Check price.
         try:
             price = float(record.get("price"))
 
@@ -82,20 +95,14 @@ def validate_data(records):
                 f"'{record.get('price')}'"
             )
 
-        # Check currency
+        # Check currency.
         if record.get("currency") != "USD":
             errors.append(
                 f"Record {index}: unexpected currency "
                 f"'{record.get('currency')}'"
             )
 
-        # Check product title
-        if not record.get("product_title"):
-            errors.append(
-                f"Record {index}: missing product title"
-            )
-
-        # Check synthetic flag
+        # Check synthetic flag.
         if not isinstance(record.get("is_synthetic"), bool):
             errors.append(
                 f"Record {index}: is_synthetic must be true or false"
