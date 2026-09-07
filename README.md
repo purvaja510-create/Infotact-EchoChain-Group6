@@ -59,7 +59,7 @@ Marketplace + BOM + Warranty
           |
           v
  Executive Lifecycle Analytics
-````
+```
 
 ## Technology Stack
 
