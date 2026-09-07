@@ -1,5 +1,4 @@
-
-````markdown
+```markdown
 # EchoChain: Circular Economy & Secondary Market Lifecycle Analytics
 
 ## Infotact Solutions Internship | Project 2
@@ -47,7 +46,7 @@ Secondary-Market Listings
         Silver
           |
           v
- SKU Extraction & Fuzzy Matching
+SKU Extraction & Fuzzy Matching
           |
           v
 Marketplace + BOM + Warranty
@@ -59,8 +58,8 @@ Marketplace + BOM + Warranty
        Power BI
           |
           v
- Executive Lifecycle Analytics
-````
+Executive Lifecycle Analytics
+```
 
 ## Technology Stack
 
