@@ -1,4 +1,3 @@
-
 # EchoChain: Circular Economy & Secondary Market Lifecycle Analytics
 
 ## Infotact Solutions Internship | Project 2
@@ -270,5 +269,3 @@ The final solution connects:
 **Marketplace Data → SKU Matching → BOM & Warranty → Component Lifecycle → Circularity → Secondary-Market Value → Business Insights**
 
 This enables organizations to move beyond traditional post-sale visibility and identify opportunities for **refurbishment, reuse, resale, and product buy-back strategies**.
-
-````
