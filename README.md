@@ -1,4 +1,4 @@
-```markdown
+
 # EchoChain: Circular Economy & Secondary Market Lifecycle Analytics
 
 ## Infotact Solutions Internship | Project 2
