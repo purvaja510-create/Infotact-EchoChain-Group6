@@ -19,7 +19,6 @@ The project requires the following tools and platforms:
 ```text
 Infotact-EchoChain-Group6/
 
-│
 ├── scrapy/
 ├── data/
 ├── databricks/

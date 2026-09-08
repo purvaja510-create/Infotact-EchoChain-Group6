@@ -3,15 +3,15 @@
 ## Overview
 
 EchoChain uses a modern data engineering and analytics stack to combine
-secondary-market data with internal manufacturing and warranty data.
+secondary-market data with internal manufacturing, BOM, and warranty data.
 
 ## Technologies
 
 ### Scrapy
 
 Used for building Python spiders to collect secondary-market
-electronics listings, including pricing, condition, seller, and location
-information.
+electronics listings, including pricing, condition, seller, location,
+and listing information.
 
 ### Databricks
 
@@ -38,33 +38,44 @@ Used for data processing and transformation, including:
 ### Power BI
 
 Used as the business intelligence and visualization layer for
-executive reporting, lifecycle analysis, marketplace analysis,
-component drill-downs, and anomaly analysis.
+executive reporting, lifecycle analysis, component drill-downs,
+marketplace analysis, and anomaly analysis.
 
 ## Technology Flow
 
 ```text
 Secondary Market Data
-        ↓
+        |
+        v
       Scrapy
-        ↓
+        |
+        v
 Raw Marketplace Data
-        ↓
+        |
+        v
 Databricks / Delta Lake
-        ↓
+        |
+        v
       Bronze
-        ↓
+        |
+        v
      PySpark
-        ↓
+        |
+        v
       Silver
-        ↓
+        |
+        v
 SKU Extraction & Fuzzy Matching
-        ↓
+        |
+        v
 Marketplace + BOM + Warranty
-        ↓
+        |
+        v
        Gold
-        ↓
+        |
+        v
      Power BI
-        ↓
+        |
+        v
 Executive Lifecycle Analytics
 ```
