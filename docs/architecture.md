@@ -1,76 +1,80 @@
-\# EchoChain Architecture
 
+# EchoChain Architecture
 
+## High-Level Architecture
 
-\## High-Level Architecture
+EchoChain follows an end-to-end data engineering and analytics pipeline that combines secondary-market marketplace data with internal product, BOM, and warranty information.
 
+![EchoChain Architecture](../images/architecture.png)
 
-
-EchoChain follows an end-to-end data engineering and analytics pipeline.
-
-
+## Architecture Flow
 
 ```text
-
 Secondary Market Data
+        |
+        v
+      Scrapy
+        |
+        v
+ Raw Marketplace Data
+        |
+        v
+ Databricks / Delta Lake
+        |
+        v
+      Bronze
+        |
+        v
+     PySpark
+        |
+        v
+      Silver
+        |
+        v
+ SKU Extraction &
+ Fuzzy Matching
+        |
+        v
+ Marketplace + BOM + Warranty
+        |
+        v
+       Gold
+        |
+        v
+     Power BI
+        |
+        v
+Executive Lifecycle Analytics
+```
 
-&#x20;       |
+## Key Components
 
-&#x20;       v
+### Secondary-Market Data
 
-&#x20;    Scrapy
+Marketplace listing data provides information such as product title, price, condition, seller, location, and listing URL.
 
-&#x20;       |
+### Scrapy
 
-&#x20;       v
+Scrapy is used to support marketplace data collection through Python spiders.
 
-&#x20;  Raw JSON / CSV
+### Databricks and Delta Lake
 
-&#x20;       |
+Databricks provides the lakehouse environment for processing and storing the data using Delta tables and a Bronze/Silver/Gold architecture.
 
-&#x20;       v
+### PySpark
 
-&#x20;Databricks / Delta Lake
+PySpark is used for data cleaning, transformation, SKU extraction, fuzzy matching, and lifecycle analytics preparation.
 
-&#x20;       |
+### BOM and Warranty Data
 
-&#x20;       v
+Internal Bill of Materials (BOM) and warranty data are combined with matched marketplace listings to provide component-level lifecycle insights.
 
-&#x20;     Bronze
+### Gold Layer
 
-&#x20;       |
+The Gold layer contains the final lifecycle analytics dataset used for reporting and business analysis.
 
-&#x20;       v
+### Power BI
 
-&#x20;    PySpark
+Power BI provides executive lifecycle analytics, including circularity, secondary-market value, warranty performance, component health, and marketplace anomaly analysis.
 
-&#x20;       |
-
-&#x20;       v
-
-&#x20;     Silver
-
-&#x20;       |
-
-&#x20;       v
-
-&#x20;Fuzzy SKU Matching
-
-&#x20;       |
-
-&#x20;       v
-
-&#x20;      Gold
-
-&#x20;       |
-
-&#x20;       v
-
-&#x20;    Power BI
-
-&#x20;       |
-
-&#x20;       v
-
-Executive Analytics
-
+```

@@ -1,104 +1,53 @@
-\# EchoChain Project Setup
 
+# EchoChain Project Setup
 
-
-\## Prerequisites
-
-
+## Prerequisites
 
 The project requires the following tools and platforms:
 
+- Python
+- Git
+- GitHub
+- Scrapy
+- Databricks
+- Delta Lake
+- PySpark
+- Power BI Desktop
 
-
-\- Python
-
-\- Git
-
-\- GitHub
-
-\- Scrapy
-
-\- Databricks
-
-\- Delta Lake
-
-\- PySpark
-
-\- Power BI Desktop
-
-
-
-\## Repository Structure
-
-
+## Repository Structure
 
 ```text
-
 Infotact-EchoChain-Group6/
 
-│
-
 ├── scrapy/
-
 ├── data/
-
 ├── databricks/
-
 ├── pyspark/
-
 ├── powerbi/
-
 ├── docs/
-
 ├── images/
-
 ├── scripts/
-
 ├── .gitignore
-
 ├── requirements.txt
-
 └── README.md
+````
 
-
-
-Development Branches
-
-
+## Development Branches
 
 Each team member works on an individual Git branch.
 
+The `main` branch contains the stable project version, while development work is carried out on individual branches.
 
+## Project Setup Status
 
-The main branch is reserved for the stable project version.
+| Component          | Status    |
+| ------------------ | --------- |
+| GitHub Repository  | Completed |
+| Team Branches      | Completed |
+| Scrapy Environment | Completed |
+| Databricks         | Completed |
+| Delta Lake         | Completed |
+| PySpark            | Completed |
+| Power BI           | Completed |
 
-
-
-Setup Status
-
-
-
-| Component          | Status      |
-
-| ------------------ | ----------- |
-
-| GitHub Repository  | Initialized |
-
-| Team Branches      | Initialized |
-
-| Scrapy Environment | In Progress |
-
-| Databricks         | Pending     |
-
-| Delta Lake         | Pending     |
-
-| PySpark            | Pending     |
-
-| Power BI           | Pending     |
-
-
-
-
-
-
-
+```
