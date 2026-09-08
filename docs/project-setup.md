@@ -1,3 +1,4 @@
+
 # EchoChain Project Setup
 
 ## Prerequisites
@@ -30,3 +31,24 @@ Infotact-EchoChain-Group6/
 ├── .gitignore
 ├── requirements.txt
 └── README.md
+````
+
+## Development Branches
+
+Each team member works on an individual Git branch.
+
+The `main` branch contains the stable project version, while development work is carried out on individual branches.
+
+## Project Setup Status
+
+| Component          | Status    |
+| ------------------ | --------- |
+| GitHub Repository  | Completed |
+| Team Branches      | Completed |
+| Scrapy Environment | Completed |
+| Databricks         | Completed |
+| Delta Lake         | Completed |
+| PySpark            | Completed |
+| Power BI           | Completed |
+
+```
