@@ -62,15 +62,15 @@ Executive Lifecycle Analytics
 
 ## Technology Stack
 
-| Technology       | Purpose                                                                                |
+| Technology | Purpose |
 | ---------------- | -------------------------------------------------------------------------------------- |
-| **Scrapy**       | Collect secondary-market electronics listing data                                      |
-| **Databricks**   | Lakehouse environment for data processing and analytics                                |
-| **Delta Lake**   | Bronze, Silver, and Gold data storage                                                  |
-| **PySpark**      | Data cleaning, SKU extraction, fuzzy matching, transformation, and lifecycle analytics |
-| **Power BI**     | Executive dashboards, KPIs, lifecycle analysis, and drill-down                         |
-| **Python**       | Data processing and validation scripts                                                 |
-| **Git & GitHub** | Version control and collaborative development                                          |
+| **Scrapy** | Collect secondary-market electronics listing data |
+| **Databricks** | Lakehouse environment for data processing and analytics |
+| **Delta Lake** | Bronze, Silver, and Gold data storage |
+| **PySpark** | Data cleaning, SKU extraction, fuzzy matching, transformation, and lifecycle analytics |
+| **Power BI** | Executive dashboards, KPIs, lifecycle analysis, and drill-down |
+| **Python** | Data processing and validation scripts |
+| **Git & GitHub** | Version control and collaborative development |
 
 ## Data Pipeline
 
@@ -138,13 +138,13 @@ Provides navigation to the main analytical sections of the report.
 
 Provides an executive-level view of:
 
-* Average Circularity Score
-* Average Secondary-Market Price
-* Total Warranty Failures
-* Secondary-Market Depreciation
-* Brand-level market performance
-* Warranty failures by component
-* Product lifecycle health by SKU and component
+- Average Circularity Score
+- Average Secondary-Market Price
+- Total Warranty Failures
+- Secondary-Market Depreciation
+- Brand-level market performance
+- Warranty failures by component
+- Product lifecycle health by SKU and component
 
 The page supports drill-down from:
 
@@ -164,8 +164,8 @@ The validated Gold lifecycle dataset currently contains:
 
 ```text
 Gold rows:                  2,300
-Marketplace listings:         575
-Official SKUs:                 24
+Marketplace listings:        575
+Official SKUs:                24
 Average Circularity Score:  78.04
 Average Depreciation:       -2.58%
 Total Warranty Failures:    5,050
@@ -179,41 +179,77 @@ The project includes validation scripts for different stages of the pipeline.
 
 ```text
 scripts/validation/
+
+├── validate_gold_lifecycle.py
 ├── validate_marketplace_data.py
 ├── validate_sku_mapping.py
-└── validate_gold_lifecycle.py
+└── README.md
 ```
 
 The validation process checks:
 
-* Required marketplace fields
-* Duplicate listing URLs
-* Price and currency validity
-* SKU matching results
-* Official SKU mappings
-* BOM coverage
-* Missing lifecycle values
-* Component health score ranges
-* Circularity score ranges
-* Final Gold dataset coverage
+- Required marketplace fields
+- Duplicate listing URLs
+- Price and currency validity
+- SKU matching results
+- Official SKU mappings
+- BOM coverage
+- Missing lifecycle values
+- Component health score ranges
+- Circularity score ranges
+- Final Gold dataset coverage
 
 Current validation results:
 
 ```text
 Marketplace dataset: PASSED
+
 SKU mapping:         PASSED
+
 Gold lifecycle data: PASSED
 ```
 
 ## Delta Lake Optimization
 
-The Gold lifecycle table is optimized using Delta Lake Z-Ordering on:
+The Gold lifecycle table was evaluated for Delta Lake optimization using Z-Ordering on:
 
 ```text
 official_sku, component
 ```
 
-This supports efficient SKU-level and component-level lifecycle analysis.
+The current Gold table is small and consists of a single Delta file, so Databricks reported no files requiring physical reorganization during the optimization check.
+
+The Z-Ordering strategy is aligned with the SKU-level and component-level access patterns used by the lifecycle analytics.
+
+## Pipeline Automation
+
+The complete PySpark pipeline is configured as a Databricks Job with the following task sequence:
+
+```text
+1. ingest_marketplace_bronze
+            |
+            v
+2. bronze_to_silver
+            |
+            v
+3. extract_marketplace_skus
+            |
+            v
+4. fuzzy_matching
+            |
+            v
+5. silver_to_gold
+```
+
+The Databricks Job:
+
+- Runs the five pipeline stages in dependency order
+- Uses Databricks Serverless compute
+- Has a daily scheduled trigger
+- Sends an email notification when the job fails
+- Has been tested with a successful end-to-end run
+
+This provides a repeatable pipeline for refreshing the lifecycle analytics data.
 
 ## Repository Structure
 
@@ -229,32 +265,56 @@ Infotact-EchoChain-Group6/
 │
 ├── databricks/
 │   └── schemas/
+│       └── marketplace_bronze_schema.md
 │
 ├── docs/
+│   ├── README.md
 │   ├── architecture.md
 │   ├── project-setup.md
-│   └── technology-stack.md
+│   ├── technology-stack.md
+│   ├── data-pipeline.md
+│   └── powerbi-dashboard.md
 │
 ├── images/
+│   ├── architecture.png
+│   ├── powerbi_component_lifecycle.png
+│   ├── powerbi_executive_overview.png
+│   ├── powerbi_home_page.png
+│   └── powerbi_marketplace_anomaly.png
 │
 ├── powerbi/
-│   └── EchoChain_Circular_Economy_Lifecycle_Analytics.pbix
+│   ├── EchoChain_Circular_Economy_Lifecycle_Analytics.pbix
+│   └── README.md
 │
 ├── pyspark/
 │   ├── bronze_to_silver.py
 │   ├── extract_marketplace_skus.py
 │   ├── fuzzy_matching.py
 │   ├── ingest_marketplace_bronze.py
-│   └── silver_to_gold.py
+│   ├── silver_to_gold.py
+│   └── README.md
 │
 ├── scrapy/
-│   └── echochain_scraper/
+│   ├── echochain_scraper/
+│   │   ├── __init__.py
+│   │   ├── items.py
+│   │   ├── middlewares.py
+│   │   ├── pipelines.py
+│   │   ├── settings.py
+│   │   └── spiders/
+│   │       ├── __init__.py
+│   │       ├── ebay_api_spider.py
+│   │       └── marketplace_spider.py
+│   ├── scrapy.cfg
+│   └── README.md
 │
 ├── scripts/
-│   └── validation/
-│       ├── validate_gold_lifecycle.py
-│       ├── validate_marketplace_data.py
-│       └── validate_sku_mapping.py
+│   ├── validation/
+│   │   ├── validate_gold_lifecycle.py
+│   │   ├── validate_marketplace_data.py
+│   │   ├── validate_sku_mapping.py
+│   │   └── README.md
+│   └── README.md
 │
 ├── requirements.txt
 └── README.md
