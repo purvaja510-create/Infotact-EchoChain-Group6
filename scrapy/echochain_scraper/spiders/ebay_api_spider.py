@@ -26,7 +26,7 @@ class EbayApiSpider(scrapy.Spider):
 
     page_limit = 50
     max_pages = 5
-
+    
     async def start(self):
 
         # Check credentials exist
@@ -85,6 +85,7 @@ class EbayApiSpider(scrapy.Spider):
         self.logger.info(
             "eBay access token generated successfully."
         )
+        
         # Search each electronics category with pagination
         for product in self.products:
 
@@ -92,39 +93,36 @@ class EbayApiSpider(scrapy.Spider):
 
                 offset = page * self.page_limit
 
-        params = {
-            "q": product,
-            "limit": self.page_limit,
-            "offset": offset
-        }
+                params = {
+                    "q": product,
+                    "limit": self.page_limit,
+                    "offset": offset
+                }
 
-        url = (
-            "https://api.sandbox.ebay.com/"
-            "buy/browse/v1/item_summary/search?"
-            + urlencode(params)
-        )
+                url = (
+                    "https://api.sandbox.ebay.com/"
+                    "buy/browse/v1/item_summary/search?"
+                    + urlencode(params)
+                )
 
-        self.logger.info(
-            "Searching %s | Page %s | Offset %s",
-            product,
-            page + 1,
-            offset
-        )
+                self.logger.info(
+                    "Searching %s | Page %s | Offset %s",
+                    product,
+                    page + 1,
+                    offset
+                )
 
-        yield scrapy.Request(
-            url=url,
-            headers={
-                "Authorization":
-                    f"Bearer {token}",
-                "X-EBAY-C-MARKETPLACE-ID":
-                    "EBAY_US"
-            },
-            callback=self.parse_items,
-            cb_kwargs={
-                "search_category": product
-            }
-        )
-        
+                yield scrapy.Request(
+                    url=url,
+                    headers={
+                        "Authorization": f"Bearer {token}",
+                        "X-EBAY-C-MARKETPLACE-ID": "EBAY_US"
+                    },
+                    callback=self.parse_items,
+                    cb_kwargs={
+                        "search_category": product
+                    }
+                )
 
     def parse_items(
         self,
