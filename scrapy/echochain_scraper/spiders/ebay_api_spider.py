@@ -24,9 +24,6 @@ class EbayApiSpider(scrapy.Spider):
         "Sony Headphones"
     ]
 
-    page_limit = 50
-    max_pages = 5
-    
     async def start(self):
 
         # Check credentials exist
@@ -85,44 +82,34 @@ class EbayApiSpider(scrapy.Spider):
         self.logger.info(
             "eBay access token generated successfully."
         )
-        
-        # Search each electronics category with pagination
+
+        # Search each electronics category
         for product in self.products:
 
-            for page in range(self.max_pages):
+            params = {
+                "q": product,
+                "limit": 50
+            }
 
-                offset = page * self.page_limit
+            url = (
+                "https://api.sandbox.ebay.com/"
+                "buy/browse/v1/item_summary/search?"
+                + urlencode(params)
+            )
 
-                params = {
-                    "q": product,
-                    "limit": self.page_limit,
-                    "offset": offset
+            yield scrapy.Request(
+                url=url,
+                headers={
+                    "Authorization":
+                        f"Bearer {token}",
+                    "X-EBAY-C-MARKETPLACE-ID":
+                        "EBAY_US"
+                },
+                callback=self.parse_items,
+                cb_kwargs={
+                    "search_category": product
                 }
-
-                url = (
-                    "https://api.sandbox.ebay.com/"
-                    "buy/browse/v1/item_summary/search?"
-                    + urlencode(params)
-                )
-
-                self.logger.info(
-                    "Searching %s | Page %s | Offset %s",
-                    product,
-                    page + 1,
-                    offset
-                )
-
-                yield scrapy.Request(
-                    url=url,
-                    headers={
-                        "Authorization": f"Bearer {token}",
-                        "X-EBAY-C-MARKETPLACE-ID": "EBAY_US"
-                    },
-                    callback=self.parse_items,
-                    cb_kwargs={
-                        "search_category": product
-                    }
-                )
+            )
 
     def parse_items(
         self,
