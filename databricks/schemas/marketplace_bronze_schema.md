@@ -1,15 +1,16 @@
-# eBay Electronics Bronze Table Schema
+# Marketplace Bronze Table Schema
 
 ## Table
 
-`workspace.bronze.ebay_electronics`
+`bronze.marketplace_listings`
 
 ## Purpose
 
 The Bronze table stores the raw marketplace listing data extracted by the EchoChain Scrapy pipeline.
 
-The Bronze layer preserves the source data with minimal transformation so that the original marketplace information remains available for downstream processing and auditing.
+The Bronze layer should preserve the source data with minimal transformation so that the original scraped information remains available for downstream processing and auditing.
 
 ## Source
 
-`data/raw/marketplace_listings.json`
+```text
+data/raw/marketplace_listings.json
